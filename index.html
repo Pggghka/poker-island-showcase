@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Poker Island — стол</title>
+    <link rel="stylesheet" href="./table.css" />
+  </head>
+  <body>
+    <div class="bar">
+      <div class="brand">♠ Poker<span> Island</span></div>
+      <div class="state" id="state">загружаю стол…</div>
+    </div>
+
+    <div class="controls">
+      <button type="button" id="play" class="go">Сыграть раздачу</button>
+      <button type="button" id="deal">Раздать</button>
+      <button type="button" id="bets">Ставки</button>
+      <button type="button" id="collect">В банк</button>
+      <button type="button" id="flop">Флоп</button>
+      <button type="button" id="show">Вскрытие</button>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="dealer-back" data-dealer-body></div>
+      <img class="stage__felt" src="./table-v2/premium-table-6-max.png" alt="" />
+      <div class="dealer-hands" data-dealer-hands></div>
+      <div class="layer" id="layer">
+        <div class="pot">
+          <div class="pot__stacks" id="pot-stacks"></div>
+          <div class="pot__sum" id="pot-sum">Банк пуст</div>
+        </div>
+        <div class="board" id="board"></div>
+      </div>
+      <div class="fx" id="fx"></div>
+    </div>
+
+    <p class="hint">
+      Стол — рендер, крупье — нарезка видеоклипов на хромакее, всё остальное считается кодом:
+      карты скользят по сукну из-под руки, фишки уходят в банк дугой, банк пересобирается по номиналам.
+    </p>
+
+    <script type="module" src="./table.js"></script>
+  </body>
+</html>

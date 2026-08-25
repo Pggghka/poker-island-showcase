@@ -1,0 +1,114 @@
+/* Витрина стола Poker Island: рендер стола, живая крупье, фирменные карты и фишки.
+   Всё движение считается кодом — покадровых анимаций тут нет. */
+:root {
+  --brass: #c9a227;
+  --ink: #e9eee5;
+  --dim: #8fa389;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; min-height: 100vh; background: #070a06; color: var(--ink);
+  font: 15px/1.5 -apple-system, system-ui, "Segoe UI", sans-serif;
+  display: flex; flex-direction: column; align-items: center;
+  background-image: radial-gradient(90% 60% at 50% 0%, #101a10, #070a06 70%);
+}
+
+.bar {
+  width: 100%; max-width: 1180px; display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px 10px; flex-wrap: wrap;
+}
+.brand { font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+.brand span { color: var(--brass); }
+.state { color: var(--dim); font-size: 13px; margin-left: auto; }
+.controls { width: 100%; max-width: 1180px; display: flex; gap: 8px; padding: 0 20px 14px; flex-wrap: wrap; }
+button {
+  background: #16200f; color: #dbe4d4; border: 1px solid #2a3822;
+  border-radius: 999px; padding: 8px 15px; font: inherit; font-size: 13px; cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+button:hover { background: #1e2a17; border-color: #3a4c30; }
+button.go { background: #2c6b3c; border-color: #3d8a4f; color: #f0f7ee; }
+button.go:hover { background: #35804a; }
+
+/* ── стол ── */
+.stage {
+  position: relative; width: min(1180px, 100vw - 20px); aspect-ratio: 3 / 2;
+  container-type: inline-size;
+}
+.stage__felt {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  z-index: 2; pointer-events: none;
+  filter: drop-shadow(0 24px 40px rgba(0, 0, 0, 0.55));
+}
+/* Крупье: тело уходит под столешницу, руки ложатся поверх сукна. */
+.dealer-back, .dealer-hands {
+  position: absolute; left: 50%; transform: translateX(-50%);
+  width: 12.5cqw; overflow: hidden; pointer-events: none;
+}
+.dealer-back { z-index: 1; top: 2.6cqw; height: calc(12.5cqw * 2.079 * 0.45); }
+.dealer-hands {
+  z-index: 3; top: calc(2.6cqw + 12.5cqw * 2.079 * 0.45);
+  height: calc(12.5cqw * 2.079 * 0.55);
+}
+.dealer-back canvas, .dealer-hands canvas { display: block; width: 100%; height: 100%; }
+
+.layer { position: absolute; inset: 0; z-index: 4; }
+.fx { position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: visible; }
+.fx > * { position: absolute; }
+
+/* ── места ── */
+.seat { position: absolute; width: 11cqw; }
+.seat__cards { position: absolute; display: flex; gap: 0.3cqw; }
+.seat__card { width: 3.9cqw; filter: drop-shadow(0 0.3cqw 0.5cqw rgba(0, 0, 0, 0.55)); }
+.seat__plate {
+  width: 100%; padding: 0.45cqw 0.7cqw; border-radius: 0.7cqw;
+  background: linear-gradient(180deg, rgba(12, 22, 14, 0.92), rgba(6, 12, 8, 0.92));
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  display: flex; flex-direction: column; align-items: center; gap: 0.15cqw;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.seat--turn .seat__plate {
+  border-color: rgba(201, 162, 39, 0.85);
+  box-shadow: 0 0 0 0.12cqw rgba(201, 162, 39, 0.18), 0 0 1.6cqw rgba(201, 162, 39, 0.28);
+}
+.seat--out { opacity: 0.42; }
+.seat__name { font-size: 1.05cqw; font-weight: 600; letter-spacing: 0.01em; }
+.seat__stack { font-size: 0.95cqw; color: var(--brass); }
+.seat__timer {
+  width: 100%; height: 0.25cqw; border-radius: 999px; background: rgba(201, 162, 39, 0.15);
+  overflow: hidden; margin-top: 0.15cqw;
+}
+.seat__timer i { display: block; height: 100%; background: var(--brass); width: 100%; transform-origin: left; }
+.seat__bet { position: absolute; display: flex; align-items: flex-end; gap: 0.3cqw; }
+
+/* ── банк и борд ── */
+.pot {
+  position: absolute; left: 50%; top: 40%; transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 0.5cqw; z-index: 5;
+}
+.pot__stacks { display: flex; align-items: flex-end; gap: 0.55cqw; min-height: 4.6cqw; }
+.pot__sum {
+  font-size: 1.25cqw; font-weight: 650; color: var(--brass); white-space: nowrap;
+  background: rgba(4, 12, 7, 0.72); border: 1px solid rgba(201, 162, 39, 0.35);
+  border-radius: 999px; padding: 0.25cqw 1cqw;
+}
+.board { position: absolute; left: 50%; top: 55%; transform: translate(-50%, -50%); display: flex; gap: 0.5cqw; z-index: 5; }
+.board__card { width: 5cqw; filter: drop-shadow(0 0.35cqw 0.6cqw rgba(0, 0, 0, 0.6)); }
+.board__card--win { animation: winGlow 1.4s ease-in-out infinite; }
+@keyframes winGlow {
+  0%, 100% { filter: drop-shadow(0 0.35cqw 0.6cqw rgba(0, 0, 0, 0.6)); }
+  50% { filter: drop-shadow(0 0 0.9cqw rgba(201, 162, 39, 0.9)) drop-shadow(0 0.35cqw 0.6cqw rgba(0, 0, 0, 0.6)); }
+}
+
+/* Карта переворачивается: две грани на общей оси. */
+.flip { perspective: 900px; }
+.flip__inner { position: relative; width: 100%; transform-style: preserve-3d; transition: transform 460ms cubic-bezier(.2,.8,.3,1); }
+.flip--open .flip__inner { transform: rotateY(180deg); }
+.flip__side { backface-visibility: hidden; }
+.flip__side--back { position: absolute; inset: 0; transform: rotateY(180deg); }
+
+.pi-card, .pi-chip { display: block; width: 100%; height: auto; }
+.pi-stack { position: relative; width: 3.1cqw; }
+.pi-stack .pi-chip { position: absolute; left: 0; width: 3.1cqw; }
+
+.hint { color: #6f8069; font-size: 12.5px; padding: 4px 20px 24px; max-width: 1180px; }
